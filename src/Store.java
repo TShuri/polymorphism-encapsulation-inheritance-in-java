@@ -33,8 +33,11 @@ public class Store {
             System.out.println("-".repeat(10) + "Список товаров" + "-".repeat(10));
             int i = 1;
             for (Product product : products) {
-                System.out.println("№ " + i);
-                product.printProduct();
+                //System.out.println("№ " + i);
+                //product.printProduct();
+                //product.defaultMethod(i);
+                Printable.staticMethod(i);
+                product.print();
                 i++;
             }
             System.out.println("-".repeat(34) );

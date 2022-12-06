@@ -7,11 +7,17 @@ public class Milk extends Product{
         this.liter = _liter;
     }
 
-    @Override
+    /*@Override
     void printProduct() {
         System.out.println("Тип: Молочный продукт");
         System.out.println("Название: " + this.name);
         System.out.println("Цена: " + this.price);
+        System.out.println("Объем: " + this.liter);
+    }*/
+    public void print(){
+        System.out.println(type + "Молочный продукт");
+        System.out.println(_name + this.name);
+        System.out.println(_price + this.price);
         System.out.println("Объем: " + this.liter);
     }
 }
