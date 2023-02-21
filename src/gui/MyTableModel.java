@@ -19,22 +19,22 @@ public class MyTableModel extends AbstractTableModel {
 
     @Override // Заполнение данных таблицы
     public Object getValueAt(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
+        switch (columnIndex) { // Тип
             case 0: {
                 Product p = this.data.getProduct(rowIndex);
                 if (p instanceof Bread) {
                     return "Хлебо-булочное изделие";
-                } else {
+                } else if (p instanceof Milk) {
                     return "Молочный продукт";
                 }
             }
-            case 1: {
+            case 1: { // Название
                 return this.data.getProduct(rowIndex).getName();
             }
-            case 2: {
+            case 2: { // Цена
                 return this.data.getProduct(rowIndex).getPrice();
             }
-            case 3: {
+            case 3: { // Количество
                 return this.data.getProduct(rowIndex).getCount();
             }
         }
@@ -52,12 +52,12 @@ public class MyTableModel extends AbstractTableModel {
         return "";
     }
 
-    public void delete(int ind){ // Удаление товара
+    public void delete(int ind) { // Удаление товара
         this.data.deleteProduct(ind);
         fireTableDataChanged();
     }
 
-    public void add(String type, String name, double price, int count){
+    public void add(String type, String name, double price, int count) { // Добавление товара
         switch (type) {
             case "Хлебо-булочное изделие": {
                 this.data.addProduct( new Bread(name, price, count) );
@@ -69,5 +69,38 @@ public class MyTableModel extends AbstractTableModel {
             }
         }
         fireTableDataChanged();
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return String.class;
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) { // Редактирование ячеек
+        switch (columnIndex) {
+            case 1: {
+                this.data.getProduct(rowIndex).setName((String) aValue);
+                break;
+            }
+            case 2: {
+                this.data.getProduct(rowIndex).setPrice(Double.parseDouble((String) aValue));
+                break;
+            }
+            case 3: {
+                this.data.getProduct(rowIndex).setCount(Integer.parseInt((String) aValue));
+                break;
+            }
+        }
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) { // Вкл возможность редактировать столбцы
+        switch (columnIndex) {
+            case 1: return true;
+            case 2: return true;
+            case 3: return true;
+        }
+        return false;
     }
 }

@@ -9,9 +9,9 @@ public class Store{
         //this.name = "Новый магазин";
         System.out.println("Магазин открыт!");
 
-        products.add(new Bread("Baton", 45, 2));
-        products.add(new Bread("Obichnui", 30, 5));
-        products.add(new Milk("yogurt", 45, 4));
+        products.add(new Bread("Батон", 45, 2));
+        products.add(new Bread("Бутербродный", 30, 5));
+        products.add(new Milk("Булка", 55, 4));
     }
 
     public void addProduct(Product product) { // Добавление товара

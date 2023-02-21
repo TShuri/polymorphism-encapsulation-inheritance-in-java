@@ -20,7 +20,7 @@ public class MainWindow extends JFrame {
     MyTableModel myTableModel;
     public MainWindow(){
         addButton = new JButton("Добавить товар");
-        addButton.addActionListener(new ActionListener() {
+        addButton.addActionListener(new ActionListener() { // Событие на добавление товара
             @Override
             public void actionPerformed(ActionEvent e) {
                 callAdd();
@@ -28,14 +28,14 @@ public class MainWindow extends JFrame {
         });
 
         deleteButton = new JButton("Удалить товар");
-        deleteButton.addActionListener(new ActionListener() {
+        deleteButton.addActionListener(new ActionListener() { // Событие на удаление товара
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     callDelete();
                 }
                 catch (IndexOutOfBoundsException ex){
-                    showMessage();
+                    showMessage(1);
                 }
             }
         });
@@ -48,6 +48,7 @@ public class MainWindow extends JFrame {
         myTableModel = new MyTableModel(new Store());
         table = new JTable(1,4);
         table.setModel(myTableModel);
+        table.isCellEditable(0,1);
         jScrollPane = new JScrollPane(table);
 
         this.add(menuPanel, BorderLayout.NORTH);
@@ -64,8 +65,17 @@ public class MainWindow extends JFrame {
         myTableModel.delete(table.getSelectedRow());
     }
 
-    private void showMessage() { // Диалоговое сообщение
-        JOptionPane.showMessageDialog(MainWindow.this, "Выберите товар из таблицы");
+    private void showMessage(int message) { // Диалоговое сообщение
+        switch (message) {
+            case 1: {
+                JOptionPane.showMessageDialog(MainWindow.this, "Выберите товар из таблицы");
+                break;
+            }
+            case 2: {
+                JOptionPane.showMessageDialog(MainWindow.this, "Заполните все поля");
+                break;
+            }
+        }
     }
 
     private void callAdd() { // Вызов метода добавления товара
@@ -73,9 +83,8 @@ public class MainWindow extends JFrame {
         addDialog.setSize(500, 200);
         addDialog.setLocationRelativeTo(MainWindow.this);
 
-
         PlainDocument filterPrice = new PlainDocument();
-        filterPrice.setDocumentFilter(new DocumentFilter() {
+        filterPrice.setDocumentFilter(new DocumentFilter() { // Фильтр для ввода цены
             @Override
             public void insertString(FilterBypass fb, int off, String str, AttributeSet attr)
                     throws BadLocationException
@@ -89,10 +98,9 @@ public class MainWindow extends JFrame {
                 fb.replace(off, len, str.replaceAll("\\D++", ""), attr);  // remove non-digits
             }
         });
-
 
         PlainDocument filterCount = new PlainDocument();
-        filterCount.setDocumentFilter(new DocumentFilter() {
+        filterCount.setDocumentFilter(new DocumentFilter() { // Фильтр для ввода количества
             @Override
             public void insertString(FilterBypass fb, int off, String str, AttributeSet attr)
                     throws BadLocationException
@@ -106,7 +114,6 @@ public class MainWindow extends JFrame {
                 fb.replace(off, len, str.replaceAll("\\D++", ""), attr);  // remove non-digits
             }
         });
-
 
         JPanel addPanel = new JPanel(new GridLayout(2, 4, 20, 5));
 
@@ -118,8 +125,6 @@ public class MainWindow extends JFrame {
         addPanel.add(priceLabel);
         JLabel countLabel = new JLabel("Количество товара");
         addPanel.add(countLabel);
-
-
 
         String[] types = new String[] {"Хлебо-булочное изделие", "Молочный продукт"};
         JComboBox<String> typesBox = new JComboBox<String>(types);
@@ -142,13 +147,17 @@ public class MainWindow extends JFrame {
         appendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                myTableModel.add( (String)typesBox.getSelectedItem(), nameField.getText(),
-                        Double.parseDouble(priceField.getText()), Integer.parseInt(countField.getText()) );
-                addDialog.dispose();
+                if ( nameField.getText().isEmpty() || priceField.getText().isEmpty() || countField.getText().isEmpty()) {
+                    showMessage(2);
+                } else {
+                    myTableModel.add((String) typesBox.getSelectedItem(), nameField.getText(),
+                            Double.parseDouble(priceField.getText()), Integer.parseInt(countField.getText()));
+                    addDialog.dispose();
+                }
             }
         });
-        addDialog.add(appendButton, BorderLayout.SOUTH);
 
+        addDialog.add(appendButton, BorderLayout.SOUTH);
 
         addDialog.setVisible(true);
     }
