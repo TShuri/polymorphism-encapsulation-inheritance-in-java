@@ -1,5 +1,5 @@
 package gui;
-public abstract class Product implements Printable {
+public abstract class Product {
     public String name;
     public double price;
     public int count;

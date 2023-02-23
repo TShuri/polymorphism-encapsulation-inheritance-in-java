@@ -1,6 +1,7 @@
 package gui;
 
 import javax.swing.*;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
@@ -8,17 +9,22 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.PatternSyntaxException;
 
 
 public class MainWindow extends JFrame {
     JPanel menuPanel;
     JScrollPane jScrollPane;
+    JTextField searchField;
     JButton addButton;
     JButton deleteButton;
-    //JTable tableHeader;
+    JButton searchButton;
+    JButton resetButton;
     JTable table;
     MyTableModel myTableModel;
+    TableRowSorter<MyTableModel> sorter;
     public MainWindow(){
+        // Кнопка добавления товара и ее событие
         addButton = new JButton("Добавить товар");
         addButton.addActionListener(new ActionListener() { // Событие на добавление товара
             @Override
@@ -27,6 +33,7 @@ public class MainWindow extends JFrame {
             }
         });
 
+        // Кнопка удаления товара и ее событие
         deleteButton = new JButton("Удалить товар");
         deleteButton.addActionListener(new ActionListener() { // Событие на удаление товара
             @Override
@@ -40,20 +47,62 @@ public class MainWindow extends JFrame {
             }
         });
 
+        // Кнопка поиска и ее событие
+        searchButton = new JButton("Поиск");
+        searchButton.addActionListener(new ActionListener() { // Событие на поиск товара
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = searchField.getText();
+                if (text.length() == 0) {
+                    sorter.setRowFilter(null);
+                } else {
+                    try {
+                        sorter.setRowFilter(RowFilter
+                                        .regexFilter(text));
+                    } catch (PatternSyntaxException pse) {
+                        System.err.println("Bad regex pattern");
+                    }
+                }
+            }
+        });
+
+        // Кнопка сброса и ее событие
+        resetButton = new JButton("Сброс");
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sorter.setRowFilter(null);
+                searchField.setText("");
+            }
+        });
+
+        searchField = new JTextField("Название товара");
+
+        // Панель меню
         menuPanel = new JPanel();
         menuPanel.setLayout(new FlowLayout());
         menuPanel.add(addButton);
         menuPanel.add(deleteButton);
+        menuPanel.add(searchField);
+        menuPanel.add(searchButton);
+        menuPanel.add(resetButton);
 
+        // Таблица, модель и фильтр поиска
         myTableModel = new MyTableModel(new Store());
         table = new JTable(1,4);
+
+        sorter = new TableRowSorter<MyTableModel>(myTableModel);
+        table.setRowSorter(sorter);
+
         table.setModel(myTableModel);
         table.isCellEditable(0,1);
         jScrollPane = new JScrollPane(table);
 
+        // Добавление компонентов на основное окно
         this.add(menuPanel, BorderLayout.NORTH);
         this.add(jScrollPane, BorderLayout.CENTER);
 
+        // Настройки основного окна
         setTitle("Store");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 400);
@@ -115,6 +164,7 @@ public class MainWindow extends JFrame {
             }
         });
 
+        // Панель добавления товара
         JPanel addPanel = new JPanel(new GridLayout(2, 4, 20, 5));
 
         JLabel typeLabel = new JLabel("Тип товара");
@@ -143,6 +193,7 @@ public class MainWindow extends JFrame {
 
         addDialog.add(addPanel, BorderLayout.NORTH);
 
+        // Кнопка потведжения добавления товара
         JButton appendButton = new JButton("Добавить");
         appendButton.addActionListener(new ActionListener() {
             @Override
